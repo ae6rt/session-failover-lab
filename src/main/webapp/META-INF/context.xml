@@ -1,0 +1,9 @@
+<!--<Context path="" docBase="foo" debug="0" reloadable="true">-->
+<Context reloadable="true">
+    <Valve className="com.radiadesign.catalina.session.RedisSessionHandlerValve"/>
+    <Manager className="com.radiadesign.catalina.session.RedisSessionManager"
+             host="192.168.5.50"
+             port="6379"
+             database="0"
+             maxInactiveInterval="60"/>
+</Context>
