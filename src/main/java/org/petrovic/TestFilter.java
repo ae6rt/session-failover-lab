@@ -10,7 +10,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
@@ -26,13 +25,17 @@ public class TestFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
-        HttpServletResponseWrapper wrapper = new HttpServletResponseWrapper((HttpServletResponse) resp);
         HttpServletRequest httpServletRequest = (HttpServletRequest) req;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
         HttpSession session = httpServletRequest.getSession();
-        String xml = new XStream().toXML(session);
-        wrapper.setHeader("X-session-size", Integer.toString(xml.length()));
-        System.out.printf("session: %s\n", xml);
-        chain.doFilter(req, wrapper);
+
+        // "key" is some session attribute we know is in the session after a user logs in.
+        if (session.getAttribute("key") != null) {
+            String xml = new XStream().toXML(session);
+            httpServletResponse.setHeader("X-session-size", Integer.toString(xml.length()));
+            System.out.printf("session: %s\n", xml);
+        }
+        chain.doFilter(req, httpServletResponse);
     }
 
 }
